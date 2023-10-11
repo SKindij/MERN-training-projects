@@ -1,5 +1,6 @@
 // routes.js
-import {Switch, Route, Redirect} from 'react-router-dom'
+import { Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom'
 import {LinksPage} from './pages/LinksPage'
 import {CreatePage} from './pages/CreatePage'
 import {DetailPage} from './pages/DetailPage'
@@ -8,27 +9,23 @@ import {AuthPage} from './pages/AuthPage'
 export const useRoutes = isAuthenticated => {
   if (isAuthenticated) {
     return (
-      <Switch>
-        <Route path="/links" exact>
-          <LinksPage />
-        </Route>
-        <Route path="/create" exact>
-          <CreatePage />
-        </Route>
-        <Route path="/detail/:id">
-          <DetailPage />
-        </Route>
-        <Redirect to="/create" />
-      </Switch>
+      <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        {/* ensures that only one route is rendered at a time */}
+        <Route path="/links" element={<LinksPage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/detail/:id" element={<DetailPage />} />
+      </Routes>
+      </Suspense>
     )
   }
 
   return (
-    <Switch>
-      <Route path="/" exact>
-        <AuthPage />
-      </Route>
-      <Redirect to="/" />
-    </Switch>
+    <Suspense fallback={<div>Loading...</div>}>
+    <Routes>
+      {/* ensures that only one route is rendered at a time */}
+      <Route path="/" element={<AuthPage />} />
+    </Routes>
+    </Suspense>
   )
 }
