@@ -1,4 +1,6 @@
 // LinkCard.jsx
+import PropTypes from 'prop-types';
+
 export const LinkCard = ({ link }) => {
   return (
     <>
@@ -11,3 +13,13 @@ export const LinkCard = ({ link }) => {
     </>
   )
 }
+
+// вefine PropTypes to validate 'link' prop
+LinkCard.propTypes = {
+  link: PropTypes.shape({
+    to: PropTypes.string.isRequired,
+    from: PropTypes.string.isRequired,
+    clicks: PropTypes.number.isRequired,
+    date: PropTypes.string.isRequired,
+  }).isRequired,
+};
