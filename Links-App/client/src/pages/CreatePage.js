@@ -2,13 +2,13 @@
 import {useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
-import {useHistory} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 
 // This component represents the page for creating new links.
 export const CreatePage = () => {
-  const history = useHistory()
-  const auth = useContext(AuthContext)
-  const {request} = useHttp()
+  const navigate = useNavigate();
+  const auth = useContext(AuthContext);
+  const {request} = useHttp();
   const [link, setLink] = useState('')
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export const CreatePage = () => {
           Authorization: `Bearer ${auth.token}`
         })
         // redirect to detail page for newly created link
-        history.push(`/detail/${data.link._id}`)
+        navigate(`/detail/${data.link._id}`);
       } catch (e) {console.log(e)}
     }
   }
@@ -37,7 +37,7 @@ export const CreatePage = () => {
           <input placeholder="Paste link"
             id="link" type="text" value={link}
             onChange={e => setLink(e.target.value)}
-            onKeyPress={pressHandler}
+            onKeyDown={pressHandler}
           />
           <label htmlFor="link">Enter link</label>
         </div>
