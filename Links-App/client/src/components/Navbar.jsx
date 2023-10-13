@@ -1,17 +1,16 @@
 // Navbar.jsx
-// Navbar.jsx
 import {useContext} from 'react'
-import {NavLink, useHistory} from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 import {AuthContext} from '../context/AuthContext'
 
 export const Navbar = () => {
-  const history = useHistory()
+  // accessing authentication context
   const auth = useContext(AuthContext)
 
-  const logoutHandler = event => {
-    event.preventDefault()
+  // Logout handler function
+  const logoutHandler = () => {
+    // event.preventDefault();
     auth.logout()
-    history.push('/')
   }
 
   return (
@@ -27,5 +26,3 @@ export const Navbar = () => {
     </nav>
   )
 }
-
-
