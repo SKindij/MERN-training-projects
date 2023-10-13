@@ -1,25 +1,31 @@
 // auth.middleware.js
-const jwt = require('jsonwebtoken')
+// library to work with JSON Web Tokens
+const jwt = require('jsonwebtoken');
+// importing configuration object
 const config = require('config')
 
+// middleware function that handles user authentication
 module.exports = (req, res, next) => {
   if (req.method === 'OPTIONS') {
-    return next()
+    // if preflight request (e.g., CORS), move on to next middleware
+    return next();
   }
 
   try {
-
+    // extracting token from 'Authorization' header
     const token = req.headers.authorization.split(' ')[1] // "Bearer TOKEN"
 
     if (!token) {
-      return res.status(401).json({ message: 'Нет авторизации' })
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const decoded = jwt.verify(token, config.get('jwtSecret'))
+    // verifying and decoding token using configured JWT secret
+    const decoded = jwt.verify(token, config.get('jwtSecret'));
+    // storing decoded user info in request object for subsequent middleware
     req.user = decoded
-    next()
+    next();
 
   } catch (e) {
-    res.status(401).json({ message: 'Нет авторизации' })
+    res.status(401).json({ message: 'Unauthorized' })
   }
 }
