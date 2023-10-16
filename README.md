@@ -96,17 +96,13 @@ In most React projects, the proxy is usually configured in the package.json file
 
   // https://vitejs.dev/config/
   export default defineConfig({
-    plugins: [react()],
     server: {
       proxy: {
-        '/api': {
-          target: 'http://localhost:5000',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        },
+        '/api':'http://localhost:5000',
       },
     },
-  })
+   plugins: [react()],
+  });
 ```
 
 
