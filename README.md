@@ -85,6 +85,32 @@ Each component in the MERN stack serves a specific role in the development of we
 
 - - -
 
+### Proxy in React Vite
+
+In most React projects, the proxy is usually configured in the package.json file using the proxy property. Vite provides its own proxy configuration mechanism, which should be configured in the **vite.config.ts** configuration file. This may seem unusual to developers who are used to using a proxy in package.json, but it is important to consider when working with Vite.
+
+```javascript
+  // vite.congig.js
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+
+  // https://vitejs.dev/config/
+  export default defineConfig({
+    plugins: [react()],
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        },
+      },
+    },
+  })
+```
+
+
+
 
 
 
