@@ -3,9 +3,6 @@
 
 
 
-
-
-
 ### User Stories
 
 1. [ ] Replace current sticky note system
@@ -28,6 +25,31 @@
 18. [ ] Only Managers and Admins can access User Settings 
 19. [ ] Only Managers and Admins can create new users 
 20. [ ] Desktop mode is most important but should be available in mobile 
+
+### 📚 The project structure (architecture):
+
+```go
+📁 TechNotes-App/
+│
+├─ server.js
+├─ package.json
+│
+├─ 📁 models/
+│   ├─ Note.js
+│   └─ User.js
+│
+├─ 📁 views/
+│   ├─ index.html
+│   └─ 404.html
+│
+├─ 📁 controllers/
+│   ├─ authController.js
+│   ├─ notesController.js
+│   └─ usersController.js
+│
+
+
+```
 
 
 
