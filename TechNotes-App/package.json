@@ -1,0 +1,24 @@
+{
+  "name": "technotes",
+  "version": "1.0.1",
+  "description": "app for recording, editing, storing and performing tasks by company employees",
+  "main": "server.js",
+  "scripts": {
+    "srart": "node server",
+    "dev": "nodemon server"
+  },
+  "keywords": [
+    "mongodb",
+    "express",
+    "react",
+    "node"
+  ],
+  "author": "SKindij",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
