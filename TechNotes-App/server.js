@@ -1,16 +1,23 @@
 // server.js
-const path = require('node:path'); // для роботи з файловими шляхами
+require('dotenv').config();
 const express = require('express'); // для створення серверів
   const app = express(); // створюємо екземпляр сервера
-  const { logger } = require('./middleware/logger');
+const path = require('node:path'); // для роботи з файловими шляхами
+  const { logger, logEvents } = require('./middleware/logger');
   const errorHandler = require('./middleware/errorHandler');
-  const cookieParser = require('cookie-parser');
-  const cors = require('cors')
+const cookieParser = require('cookie-parser');
+const cors = require('cors')
   const corsOptions = require('./config/corsOptions');
+const connectDB = require('./config/dbConn');
+const mongoose = require('mongoose');
 
 // визначаємо порт, на якому буде працювати сервер  
 const PORT = process.env.PORT || 3500;
   console.log('Starting Tech Notes App...');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+// підкючаємося до сервісу бази даних
+connectDB();
+
 // логує дані про кожний HTTP-запит
 app.use(logger);
 // дозволяє контролювати, які джерела мають доступ до сервера
@@ -21,7 +28,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // middleware для обробки статичних файлів із папки '/public'
-app.use('/', express.static(path.join(__dirname, '/public')));
+app.use('/', express.static(path.join(__dirname, 'public')));
 
 // middleware, який обробляє маршрути, визначені у файлі 'root'
 app.use('/', require('./routes/root'));
@@ -43,8 +50,17 @@ app.all('*', (req, res) => {
 // для логування та відправлення відповіді про помилку клієнту
 app.use(errorHandler);
 
-// слухаємо вказаний порт і виводимо повідомлення про старт сервера
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+mongoose.connection.once('open', () => {
+    console.log('Connected to Atlas MongoDB');
+    // слухаємо вказаний порт і виводимо повідомлення про старт сервера
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+});
+
+mongoose.connection.on('error', err => {
+    console.log(err);
+    logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log');
+});
 
 // npm run dev
 // http://localhost:3500/
