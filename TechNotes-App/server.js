@@ -2,17 +2,29 @@
 const path = require('node:path'); // для роботи з файловими шляхами
 const express = require('express'); // для створення серверів
   const app = express(); // створюємо екземпляр сервера
+  const { logger } = require('./middleware/logger');
+  const errorHandler = require('./middleware/errorHandler');
+  const cookieParser = require('cookie-parser');
+  const cors = require('cors')
+  const corsOptions = require('./config/corsOptions');
+
 // визначаємо порт, на якому буде працювати сервер  
 const PORT = process.env.PORT || 3500;
-
-console.log('Starting Tech Notes App...');
-
+  console.log('Starting Tech Notes App...');
+// логує дані про кожний HTTP-запит
+app.use(logger);
+// дозволяє контролювати, які джерела мають доступ до сервера
+app.use(cors(corsOptions));
+// дозволяє обробляти JSON-дані у відповідях на POST-запити
+app.use(express.json());
+// для роботи з кукісами  
+app.use(cookieParser());
 
 // middleware для обробки статичних файлів із папки '/public'
-app.use('/', express.static(path.join(__dirname, '/public')))
+app.use('/', express.static(path.join(__dirname, '/public')));
 
 // middleware, який обробляє маршрути, визначені у файлі 'root'
-app.use('/', require('./routes/root'))
+app.use('/', require('./routes/root'));
 
 
 
@@ -26,9 +38,13 @@ app.all('*', (req, res) => {
     } else {
         res.type('txt').send('404 Not Found')
     }
-})
+});
+
+// для логування та відправлення відповіді про помилку клієнту
+app.use(errorHandler);
 
 // слухаємо вказаний порт і виводимо повідомлення про старт сервера
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // npm run dev
+// http://localhost:3500/
