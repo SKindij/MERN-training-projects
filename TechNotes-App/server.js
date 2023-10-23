@@ -30,10 +30,11 @@ app.use(cookieParser());
 // middleware для обробки статичних файлів із папки '/public'
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-// middleware, який обробляє маршрути, визначені у файлі 'root'
+// middleware обробки маршруту, визначеного у файлі 'root'
 app.use('/', require('./routes/root'));
-
-
+// обробники маршрутів для користувачів та нотаток
+app.use('/users', require('./routes/userRoutes'));
+app.use('/notes', require('./routes/noteRoutes'));
 
 // для обробки інших запитів, які не відповідають жодному з попередніх маршрутів
 app.all('*', (req, res) => {
@@ -64,3 +65,5 @@ mongoose.connection.on('error', err => {
 
 // npm run dev
 // http://localhost:3500/
+// http://localhost:3500/users
+// http://localhost:3500/notes
