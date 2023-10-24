@@ -1,4 +1,11 @@
-# MERN
+# MERN projects
+
+* [TechNotes-App](https://github.com/SKindij/MERN-training-projects/tree/main/TechNotes-App)
+* [Links-App](https://github.com/SKindij/MERN-training-projects/tree/main/Links-App)
+
+
+
+## About MERN
 
 &emsp;It represents a popular stack of technologies used for building modern SPAs and full-stack JavaScript applications. 
 Each component in the MERN stack serves a specific role in the development of web applications.
