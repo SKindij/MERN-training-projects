@@ -1,16 +1,18 @@
 // DashFooter.jsx
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHouse } from "@fortawesome/free-solid-svg-icons"
-import { useNavigate, useLocation } from 'react-router-dom'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const DashFooter = () => {
+  // хуки для навігації та визначення поточного шляху
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // функція для переходу на головну сторінку
+  const onGoHomeClicked = () => navigate('/dash');
 
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-
-  const onGoHomeClicked = () => navigate('/dash')
-
-  let goHomeButton = null
+  let goHomeButton = null;
+  // перевіряємо, чи поточний шлях не є "/dash" 
+  // перед відображенням кнопки "Повернутися на головну"
   if (pathname !== '/dash') {
     goHomeButton = (
       <button
@@ -21,7 +23,7 @@ const DashFooter = () => {
         <FontAwesomeIcon icon={faHouse} />
       </button>
     )
-  }
+  };
 
     const content = (
         <footer className="dash-footer">
@@ -29,7 +31,7 @@ const DashFooter = () => {
             <p>Current User:</p>
             <p>Status:</p>
         </footer>
-    )
-    return content
+    );
+    return content;
 }
-export default DashFooter
+export default DashFooter;
