@@ -33,6 +33,7 @@
 │
 ├─ server.js
 ├─ package.json
+├─ .env
 │
 ├─ 📁 models/
 │   ├─ Note.js
@@ -47,7 +48,21 @@
 │   ├─ notesController.js
 │   └─ usersController.js
 │
-
+├─ 📁 config/
+│   ├─ allowedOrigins.js
+│   ├─ corsOptions.js
+│   └─ dbConn.js
+│
+├─ 📁 middleware/
+│   ├─ errorHandler.js
+│   └─ logger.js
+│
+│
+├─ 📁 routes/
+│   ├─ noteRoutes.js
+│   ├─ root.js
+│   └─ userRoutes.js
+│
 
 ```
 
