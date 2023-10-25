@@ -1,97 +1,92 @@
-// notesApiSlice.jsx
-// функції, що дозволяють створити адаптер для роботи із структурованими даними в Redux-сховищі
+// usersApiSlice.jsx
 import {createSelector, createEntityAdapter} from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 
-// створення адаптера для управління нотатками
-const notesAdapter = createEntityAdapter({
-  // сортуємо нотатки за їх статусом "виконано" або "відкрито"
-  sortComparer: (a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1
-});
+const usersAdapter = createEntityAdapter({});
 
-// початковий стан для нотаток, використовуючи адаптер
-const initialState = notesAdapter.getInitialState();
-/*
-  Основна мета цього запису полягає в тому, щоб створити 
-  стандартну структуру для даних про нотатки, яку обробляє адаптер. 
-    ids: масив, який містить ідентифікатори (ключі) нотаток
-	entities: об'єкт, де ключами є ідентифікатори нотаток, а значеннями є об'єкти нотаток
-*/
+const initialState = usersAdapter.getInitialState();
 
-// модуль визначає API-шар для роботи із нотатками в Redux-сховищі
-export const notesApiSlice = apiSlice.injectEndpoints({
+export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
-	// визначаємо кінцеву точку для отримання нотаток
-    getNotes: builder.query({
-      query: () => '/notes', //  вказуєтемо URL для запиту
+    getUsers: builder.query({
+      query: () => '/users',
       validateStatus: (response, result) => {
-		// повертає true, якщо статус відповіді 200 і результат не має помилок
         return response.status === 200 && !result.isError
       },
-	  // дані, які не використовуються 5 хвилин, будуть видалені з кешу
       keepUnusedDataFor: 5,
-	  // обробляємо відповідь від сервера перед збереженням її в Redux-сховищі
       transformResponse: responseData => {
-		// додаємо до кожної нотатки поле id на основі _id
-        const loadedNotes = responseData.map(note => {
-          note.id = note._id
-          return note
+        const loadedUsers = responseData.map(user => {
+          user.id = user._id
+          return user
         });
-		// для збереження цих даних в Redux-сховищі
-        return notesAdapter.setAll(initialState, loadedNotes)
+        return usersAdapter.setAll(initialState, loadedUsers)
       },
-	  // визначаємо теги для кешування результату запиту
       providesTags: (result, error, arg) => {
         if (result?.ids) {
           return [
-            { type: 'Note', id: 'LIST' },
-            ...result.ids.map(id => ({ type: 'Note', id }))
+            { type: 'User', id: 'LIST' },
+            ...result.ids.map(id => ({ type: 'User', id }))
           ]
-        } else return [{ type: 'Note', id: 'LIST' }]
+        } else return [{ type: 'User', id: 'LIST' }]
       }
     }),
+    addNewUser: builder.mutation({
+      query: initialUserData => ({
+        url: '/users',
+        method: 'POST',
+        body: {
+            ...initialUserData,
+        }
+      }),
+      invalidatesTags: [
+        { type: 'User', id: "LIST" }
+      ]
+    }),
+    updateUser: builder.mutation({
+      query: initialUserData => ({
+        url: '/users',
+        method: 'PATCH',
+        body: {
+            ...initialUserData,
+        }
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'User', id: arg.id }
+      ]
+    }),
+    deleteUser: builder.mutation({
+      query: ({ id }) => ({
+        url: `/users`,
+        method: 'DELETE',
+        body: { id }
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'User', id: arg.id }
+      ]
+    }),
   }),
-})
+});
 
-// дозволяє виконувати запити до сервера та отримувати актуальні дані
-export const { useGetNotesQuery } = notesApiSlice;
-/*
-  це можна використовувати у компонентах наступним чином:
-    * import { useGetNotesQuery } from './notesApiSlice';
-    *виконати запит для отримання нотаток
-	  const { data, error, isLoading } = useGetNotesQuery();
-	    - дані, які отримано в результаті запиту
-		- помилка, якщо запит завершився невдачею
-		- показує, чи триває виконання запиту
-*/
+export const {
+  useGetUsersQuery,
+  useAddNewUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+} = usersApiSlice;
 
-// дозволяє отримати результати попередніх запитів, які вже збережено в сховищі
-export const selectNotesResult = notesApiSlice.endpoints.getNotes.select();
-/*
-  можна використовувати у коді таким чином:
-    * import { selectNotesResult } from './notesApiSlice';
-	* отримати результат запиту "getNotes"
-	const notesResult = selectNotesResult(store.getState());
-	* використовувати дані, помилку та інші властивості результату
-      const { data, error, isLoading } = notesResult;
-*/
+// returns the query result object
+export const selectUsersResult = usersApiSlice.endpoints.getUsers.select();
 
 // creates memoized selector
-const selectNotesData = createSelector(
-  // приймаємо дані зі сховища
-    selectNotesResult,
-  // при повторних викликах з тим же результатом, повертає закешовані дані, не обчислюючи їх знову
-    notesResult => notesResult.data
+const selectUsersData = createSelector(
+    selectUsersResult,
+    usersResult => usersResult.data // normalized state object with ids & entities
 );
-/*
-  Мемоізований селектор - це функція, яка кешує результати і повертає закешовані дані,
-  якщо вхідні параметри не змінилися. Це оптимізує продуктивність додатку.
-*/
 
-// створення селекторів для роботи із нотатками за допомогою адаптера
+//getSelectors creates these selectors and we rename them with aliases using destructuring
 export const {
-  selectAll: selectAllNotes, // для отримання всіх нотаток у формі масиву
-  selectById: selectNoteById, // для отримання нотатки за її ідентифікатором
-  selectIds: selectNoteIds // для отримання всіх ключів нотаток у формі масиву
-  // визначає всі селектори та налаштовує їх для використання
-} = notesAdapter.getSelectors(state => selectNotesData(state) ?? initialState);
+    selectAll: selectAllUsers,
+    selectById: selectUserById,
+    selectIds: selectUserIds
+    // Pass in a selector that returns the users slice of state
+} = usersAdapter.getSelectors(state => selectUsersData(state) ?? initialState);
