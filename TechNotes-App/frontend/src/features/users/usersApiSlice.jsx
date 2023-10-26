@@ -2,18 +2,22 @@
 import {createSelector, createEntityAdapter} from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 
+// створення адаптера для нормалізації даних користувачів
 const usersAdapter = createEntityAdapter({});
+  // створення початкового стану для адаптера
+  const initialState = usersAdapter.getInitialState();
 
-const initialState = usersAdapter.getInitialState();
-
+// створення засобу для керування даними користувачів з використанням apiSlice
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
+	// запит для отримання списку користувачів
     getUsers: builder.query({
       query: () => '/users',
       validateStatus: (response, result) => {
         return response.status === 200 && !result.isError
       },
       keepUnusedDataFor: 5,
+	  // отримані дані нормалізуються і зберігаються з використанням адаптера
       transformResponse: responseData => {
         const loadedUsers = responseData.map(user => {
           user.id = user._id
@@ -30,6 +34,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         } else return [{ type: 'User', id: 'LIST' }]
       }
     }),
+	// запит для створення нового користувача
     addNewUser: builder.mutation({
       query: initialUserData => ({
         url: '/users',
@@ -42,6 +47,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         { type: 'User', id: "LIST" }
       ]
     }),
+	// запит для оновлення існуючого користувача
     updateUser: builder.mutation({
       query: initialUserData => ({
         url: '/users',
@@ -54,6 +60,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         { type: 'User', id: arg.id }
       ]
     }),
+	// запит для видалення користувача
     deleteUser: builder.mutation({
       query: ({ id }) => ({
         url: `/users`,
@@ -67,26 +74,24 @@ export const usersApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
+// експорт готових гуків для взаємодії з цими запитами та мутаціями
 export const {
-  useGetUsersQuery,
-  useAddNewUserMutation,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
+  useGetUsersQuery, useAddNewUserMutation,
+  useUpdateUserMutation, useDeleteUserMutation,
 } = usersApiSlice;
 
-// returns the query result object
+// вибір результатів запиту для відображення
 export const selectUsersResult = usersApiSlice.endpoints.getUsers.select();
 
-// creates memoized selector
+// створення селектора для отримання даних користувачів
 const selectUsersData = createSelector(
     selectUsersResult,
-    usersResult => usersResult.data // normalized state object with ids & entities
+    usersResult => usersResult.data
 );
 
-//getSelectors creates these selectors and we rename them with aliases using destructuring
+// створення селекторів для отримання різних частин даних користувачів
 export const {
     selectAll: selectAllUsers,
     selectById: selectUserById,
-    selectIds: selectUserIds
-    // Pass in a selector that returns the users slice of state
+    selectIds: selectUserIds  
 } = usersAdapter.getSelectors(state => selectUsersData(state) ?? initialState);
