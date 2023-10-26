@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { ROLES } from "../../config/roles";
 
+// регулярні вирази для перевірки коректності імені користувача та паролю
 const USER_REGEX = /^[A-z]{3,20}$/;
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/;
 
@@ -24,14 +25,15 @@ const NewUserForm = () => {
   const [validPassword, setValidPassword] = useState(false);
   const [roles, setRoles] = useState(["Employee"]);
 
+  // встановлення валідності імені користувача при зміні значення
   useEffect(() => {
     setValidUsername(USER_REGEX.test(username))
   }, [username])
-
+  // встановлення валідності паролю при зміні значення
   useEffect(() => {
     setValidPassword(PWD_REGEX.test(password))
   }, [password])
-
+  // в разі успіху - очищення полів та перенаправлення на сторінку користувачів
   useEffect(() => {
     if (isSuccess) {
       setUsername('')
@@ -40,10 +42,11 @@ const NewUserForm = () => {
       navigate('/dash/users')
     }
   }, [isSuccess, navigate])
-
+  // обробники зміни імені та паролю користувача
   const onUsernameChanged = e => setUsername(e.target.value);
   const onPasswordChanged = e => setPassword(e.target.value);
 
+  // обробник вибору ролей користувача
   const onRolesChanged = e => {
     const values = Array.from(
       e.target.selectedOptions, //HTMLCollection 
@@ -52,8 +55,10 @@ const NewUserForm = () => {
     setRoles(values)
   }
 
+  // визначення, чи можливо зберегти дані користувача
   const canSave = [roles.length, validUsername, validPassword].every(Boolean) && !isLoading;
 
+  // обробник збереження нового користувача
   const onSaveUserClicked = async (e) => {
     e.preventDefault()
     if (canSave) {
@@ -61,6 +66,7 @@ const NewUserForm = () => {
     }
   };
 
+  // створення опцій для вибору ролей користувача
   const options = Object.values(ROLES).map(role => {
     return (
       <option
@@ -70,12 +76,14 @@ const NewUserForm = () => {
     )
   });
 
+  // визначення класу для відображення помилки або відсутності помилки
   const errClass = isError ? "errmsg" : "offscreen";
+  // визначення класів для виділення невалідних полів вводу
   const validUserClass = !validUsername ? 'form__input--incomplete' : '';
   const validPwdClass = !validPassword ? 'form__input--incomplete' : '';
   const validRolesClass = !Boolean(roles.length) ? 'form__input--incomplete' : '';
 
-
+  // відображення форми створення нового користувача
   const content = (
     <>
       <p className={errClass}>{error?.data?.message}</p>
