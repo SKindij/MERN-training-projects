@@ -6,22 +6,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons"
 import { ROLES } from "../../config/roles"
 
+// регулярний вираз для перевірки коректності імені та паролю користувача
 const USER_REGEX = /^[A-z]{3,20}$/
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/
 
 const EditUserForm = ({ user }) => {
 
+  /* Мутації служать для взаємодії з Redux-сховищем і зміни його стану. 
+    1. Створення мутації з використанням Redux Toolkit або звичайного Redux.
+	2. Виклик цієї мутації, передаючи їй необхідні параметри, такі як дані для зміни стану.
+	3. Мутація робить зміни в Redux-сховищі, оновлюючи відповідний стан.
+  */
+
+  // використання мутацій для оновлення користувача
   const [updateUser, {
       isLoading, isSuccess,
       isError, error
   }] = useUpdateUserMutation()
 
+  // використання мутації для видалення користувача
   const [deleteUser, {
     isSuccess: isDelSuccess,
     isError: isDelError,
     error: delerror
   }] = useDeleteUserMutation()
 
+  // функція для навігації на інші сторінки
   const navigate = useNavigate();
 
   const [username, setUsername] = useState(user.username);
@@ -31,14 +41,17 @@ const EditUserForm = ({ user }) => {
   const [roles, setRoles] = useState(user.roles);
   const [active, setActive] = useState(user.active);
 
+  // перевірка коректності імені користувача
   useEffect(() => {
     setValidUsername(USER_REGEX.test(username))
   }, [username])
-
+  // перевірка коректності паролю
   useEffect(() => {
     setValidPassword(PWD_REGEX.test(password))
   }, [password])
 
+
+  // очищення полів та перехід на сторінку користувачів
   useEffect(() => {
     console.log(isSuccess)
     if (isSuccess || isDelSuccess) {
@@ -61,16 +74,19 @@ const EditUserForm = ({ user }) => {
         setRoles(values)
     }
 
-    const onActiveChanged = () => setActive(prev => !prev)
+  // зміна статусу активності користувача
+  const onActiveChanged = () => setActive(prev => !prev)
 
   const onSaveUserClicked = async (e) => {
     if (password) {
+	  // оновлення користувача із новим паролем
       await updateUser({ id: user.id, username, password, roles, active })
     } else {
+	  // оновлення користувача без зміни паролю
       await updateUser({ id: user.id, username, roles, active })
     }
   }
-
+    // видалення користувача
     const onDeleteUserClicked = async () => {
         await deleteUser({ id: user.id })
     }
@@ -87,18 +103,27 @@ const EditUserForm = ({ user }) => {
 
   let canSave;
   if (password) {
+	  // перевірка, чи можна зберегти зміни при зміні паролю
     canSave = [roles.length, validUsername, validPassword].every(Boolean) && !isLoading
   } else {
+	  // перевірка, чи можна зберегти зміни без зміни паролю
     canSave = [roles.length, validUsername].every(Boolean) && !isLoading
   }
-
+  // Клас для відображення повідомлення про помилку
   const errClass = (isError || isDelError) ? "errmsg" : "offscreen";
+  // Класи для позначення некоректного імені чи паролю користувача
   const validUserClass = !validUsername ? 'form__input--incomplete' : '';
   const validPwdClass = password && !validPassword ? 'form__input--incomplete' : '';
+  // Клас для позначення невибраних ролей
   const validRolesClass = !Boolean(roles.length) ? 'form__input--incomplete' : '';
-
+  // вміст повідомлення про помилку
   const errContent = (error?.data?.message || delerror?.data?.message) ?? '';
-
+  /*
+    "error?." - спочатку перевіряється, чи існує об'єкт error
+	".data?" - потім чи існує в ньому об'єкт data
+	".message" - якщо це правда, то вилучається значення поля message
+	"?? ''" - оператор "заповнення за замовчуванням" або "нульовий співставник"
+  */
 
   const content = (
     <>
