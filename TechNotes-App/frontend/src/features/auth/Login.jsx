@@ -3,25 +3,26 @@ import { useRef, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { useDispatch } from 'react-redux';
-import { setCredentials } from './authSlice';
-import { useLoginMutation } from './authApiSlice';
+import { setCredentials } from './authSlice'; // дія для зберігання автентифікаційних даних
+import { useLoginMutation } from './authApiSlice'; // мутація для логіну
 
 const Login = () => {
-    const userRef = useRef()
-    const errRef = useRef()
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [errMsg, setErrMsg] = useState('')
+    const userRef = useRef(); // посилання на поле вводу користувача
+    const errRef = useRef(); // посилання на поле для відображення помилок
+    const [username, setUsername] = useState(''); // стан для введеного імені
+    const [password, setPassword] = useState(''); // стан для введеного пароля
+    const [errMsg, setErrMsg] = useState(''); // стан для повідомлення про помилки
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const navigate = useNavigate(); // хук для навігації між сторінками
+    const dispatch = useDispatch(); // хук для використання діспетчера Redux
 
-    const [login, { isLoading }] = useLoginMutation()
-
+  // гач для виконання логіну і стан завантаження
+    const [login, { isLoading }] = useLoginMutation();
+  // встановлюємо фокус на поле вводу користувача при завантаженні компонента
     useEffect(() => {
         userRef.current.focus()
     }, []);
-
+  // очищаємо повідомлення про помилки при зміні введеного користувача або пароля
     useEffect(() => {
         setErrMsg('');
     }, [username, password]);
@@ -30,11 +31,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const { accessToken } = await login({ username, password }).unwrap()
-      dispatch(setCredentials({ accessToken }))
-      setUsername('')
-      setPassword('')
-      navigate('/dash')
+      const { accessToken } = await login({ username, password }).unwrap();
+      dispatch(setCredentials({ accessToken })); // зберігаємо токен в Redux
+      setUsername('');
+      setPassword('');
+      navigate('/dash'); // переходимо до сторінки "dash"
     } catch (err) {
       if (!err.status) {
         setErrMsg('No Server Response');
@@ -45,7 +46,7 @@ const Login = () => {
       } else {
           setErrMsg(err.data?.message);
       }
-        errRef.current.focus();
+        errRef.current.focus(); // фокус на поле для відображення помилок
     }
   }
 
