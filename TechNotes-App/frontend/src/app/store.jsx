@@ -2,6 +2,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from './api/apiSlice';
 import { setupListeners } from "@reduxjs/toolkit/query";
+import authReducer from '../features/auth/authSlice';
 
 // створення Redux-сховища з допомогою Redux Toolkit
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
     reducer: {
 	  // використовуємо дані як ключ та як значення
         [apiSlice.reducerPath]: apiSlice.reducer,
+	auth: authReducer,  
     },
   // для обробки асинхронних запитів за допомогою Redux Toolkit
   // допомагає управляти запитами до API та оновлювати стан на основі відповідей API
