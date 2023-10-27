@@ -32,6 +32,8 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 
 // middleware обробки маршруту, визначеного у файлі 'root'
 app.use('/', require('./routes/root'));
+// обробник маршруту аутентифікації
+app.use('/auth', require('./routes/authRoutes'));
 // обробники маршрутів для користувачів та нотаток
 app.use('/users', require('./routes/userRoutes'));
 app.use('/notes', require('./routes/noteRoutes'));
