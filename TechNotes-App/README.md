@@ -76,4 +76,31 @@
 ```
 
 
+#### example ".env"
+
+```go
+  NODE_ENV=development
+  DATABASE_URI='mongodb+srv://user:parolle@clustertodo.../techNotesDB?retryWrites=true&w=majority'
+  ACCESS_TOKEN_SECRET=randombyte
+  REFRESH_TOKEN_SECRET=randombyte
+```
+
+random byte generation using the crypto module
+```javascript
+  const crypto = require('crypto');
+  const randomBytes = crypto.randomBytes(64).toString('hex');
+  console.log(randomBytes);
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
