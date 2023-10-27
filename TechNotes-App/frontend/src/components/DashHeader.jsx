@@ -14,14 +14,14 @@ const DashHeader = () => {
 
     const navigate = useNavigate();
     const { pathname } = useLocation();
-
+  // гач для виконання виходу користувача
     const [sendLogout, {
         isLoading,
         isSuccess,
         isError,
         error
     }] = useSendLogoutMutation()
-
+  // після успішного виходу переходимо на сторінку логіну
     useEffect(() => {
         if (isSuccess) navigate('/')
     }, [isSuccess, navigate])
@@ -31,10 +31,11 @@ const DashHeader = () => {
     if (isError) return <p>Error: {error.data?.message}</p>
 
     let dashClass = null
+  // стилізація заголовка якщо URL не відповідає сторінці Dashboard, Notes або Users
     if (!DASH_REGEX.test(pathname) && !NOTES_REGEX.test(pathname) && !USERS_REGEX.test(pathname)) {
         dashClass = "dash-header__container--small"
     }
-
+  // <!-- Кнопка для виходу -->
     const logoutButton = (
         <button
             className="icon-button"
