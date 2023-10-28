@@ -1,7 +1,6 @@
 // allowedOrigins.js
 const allowedOrigins = [
-    'http://localhost:3000',
-    'https://rva.expert'
+    'http://localhost:5173'
 ]
 
 module.exports = allowedOrigins
